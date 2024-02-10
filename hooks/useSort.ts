@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
  * Custom React hook for sorting data in a table or list.
  *
  * @template T - The type of each data item in the array.
- * @param {[key:string,values:T][]} initialData - The initial data array to be sorted.
+ * @param {Array<[string, T]>} initialData - The initial data array to be sorted.
  * @param {keyof T | undefined} [initialColumn] - The initial column to be sorted by. (optional)
  * @param {'asc' | 'desc' | undefined} [initialDirection='asc'] - The initial sorting direction. (optional)
  * @returns {{
@@ -14,7 +14,12 @@ import { useState, useMemo } from 'react';
 *   sortDirection: 'asc' | 'desc' | undefined; // The current sorting direction.
 *   handleSort: (columnKey: keyof T) => void; // Function to handle column header click for sorting.
 *   getSortIndicator: (columnKey: keyof T) => string; // Function to get a sorting indicator for a column.
-* }}
+* * }} Object containing sorting information and functions for sorting.
+*         - sortedData:T[]; The sorted data array.
+*         - sortedColumn: keyof; T The currently sorted column.
+*         - sortDirection:'asc'|'desc'; The current sorting direction.
+*         - handleSort:(columnKey: keyof T) => string; Function to handle column header click for sorting.
+*         - getSortIndicator:(columnKey: keyof T) => string; Function to get a sorting indicator to show in a column header.
 *
 * @example
 * const {
