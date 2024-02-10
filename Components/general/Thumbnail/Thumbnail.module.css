@@ -1,0 +1,38 @@
+.thumbnail-card {
+  width: 19rem;
+  height: 8rem;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+  text-align: center;
+  background-color: rgb(244, 244, 244);
+}
+
+.thumbnail-card:hover {
+  transform: translateY(-5px);
+  background-color: rgb(212, 211, 211);
+}
+
+
+.thumbnail-card-content {
+  padding: 16px;
+  text-align: center;
+}
+
+
+
+.thumbnail-card img {
+  max-width: 100%;
+  height: auto;
+}
+
+.thumbnail-card-content h3 {
+  margin: 10px 0;
+  
+}
+
+.thumbnail-card-content p {
+  font-size: 14px;
+  color: rgb(151, 150, 150);
+}

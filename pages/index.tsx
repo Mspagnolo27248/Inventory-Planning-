@@ -1,8 +1,11 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link';
 
 
 export default function Home() {
+
+  const productsApiUrl = process.env.NEXT_PUBLIC_BACKEND_PRODUCTS ;
   return (
     <>
       <Head>
@@ -12,7 +15,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main >
-<h1>Hello</h1>
+<h1>HomePage</h1>
+ <Link href={'./Entities/Products'}>Products</Link>
       </main>
     </>
   )

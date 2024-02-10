@@ -1,0 +1,32 @@
+.backdrop {
+    position: fixed;
+    top:0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1030;
+  }
+  
+  .side-bar{
+    position: fixed;
+    top:0;
+    right: 0;
+    height: 100%;
+    width: 35%;
+    z-index: 1031;
+    overflow-y: scroll;
+    background-color: rgb(207, 207, 207);
+  
+  }
+
+
+  .close-button{
+    position: absolute;
+    font-size: 3rem;
+    top:0;
+    right: 0;
+    cursor: pointer;
+    color: #fdf8f8;
+    background-color: rgb(207, 207, 207);
+    border: none;
+}
