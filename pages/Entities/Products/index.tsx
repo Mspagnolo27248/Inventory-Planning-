@@ -46,8 +46,8 @@ export default function Products() {
   const [tableData, setTableData] = useState<IProducts[]>([] as IProducts[]);
   const [filters, setFilters] = useState<FilterStateObject<IProducts>>({} as FilterStateObject<IProducts>); //move to customer hook
   const [dataKeys, setDataKeys] = useState<Array<keyof IProducts>>([]);
- 
   const  selectHook = useSelectElemet();
+ 
 
     /*Page Load*/
     useEffect(() => {
@@ -58,9 +58,7 @@ export default function Products() {
           //Check for id field if not add one. 
           setTableData(data);
           setDataKeys(Object.keys(data[0]) as Array<keyof IProducts>);
-          const productClassList = distinctValuesOfProperty(data,'ClassCode').map((item,idx)=>({id:idx,desc:item}))
-          const classDropDownOptions = selectHook.createOptions(productClassList,'id',(item)=>(item.desc));
-          selectHook.setOptions(classDropDownOptions);
+ 
         } catch (error: any) {
           danger(error.message);
         }
@@ -69,6 +67,13 @@ export default function Products() {
       fetchData();
     },[]);
   
+useEffect(()=>{
+ 
+  const productClassList = distinctValuesOfProperty(tableData,'ClassCode').map((item,idx)=>({id:idx,desc:item}))
+  const classDropDownOptions = selectHook.createOptions(productClassList,'id',(item)=>(item.desc));
+  selectHook.setOptions(classDropDownOptions);
+},[tableData])
+
 
   const { /*useSort Hook*/
     sortedData,

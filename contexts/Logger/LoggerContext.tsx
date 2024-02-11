@@ -1,7 +1,9 @@
-import { Logger } from '@/service/class-models/Logger';
+
+import { ILogger } from '@/Interfaces/ILogger';
+import { Logger } from '@/class-libraries/utils/logger/Logger';
 import React, {ReactNode, createContext,useContext} from 'react';
 
-const LoggerContext = createContext<Logger|null>(null); //Create a new contexst that will be of type Logger or null, set to null.
+const LoggerContext = createContext<ILogger|null>(null); //Create a new context that will be of type Logger or null, set to null.
 
 
 export const useLogger = () =>{ //Create customer hook that will allow the user to interacte with the Logger instance inside LoggerContext.
