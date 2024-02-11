@@ -1,3 +1,4 @@
+import { useCustomHook } from '@/Components/application/Examples/example';
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
@@ -6,6 +7,7 @@ import Link from 'next/link';
 export default function Home() {
 
   const productsApiUrl = process.env.NEXT_PUBLIC_BACKEND_PRODUCTS ;
+  const { count, increment, CustomComponent } = useCustomHook();
   return (
     <>
       <Head>
@@ -17,6 +19,14 @@ export default function Home() {
       <main >
 <h1>HomePage</h1>
  <Link href={'./Entities/Products'}>Products</Link>
+
+ <div>
+      <h1>Parent Component</h1>
+      {/* You can use the count value and the CustomComponent */}
+      <p>Count: {count}</p>
+      <CustomComponent />
+      <button onClick={increment}>Increment from Parent</button>
+    </div>
       </main>
     </>
   )

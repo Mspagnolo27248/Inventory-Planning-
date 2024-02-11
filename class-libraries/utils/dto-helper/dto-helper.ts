@@ -50,3 +50,8 @@ export function sumOfProperty<T>(array: T[], field: keyof T): number {
         return 0;
 
     };
+
+    export function distinctValuesOfProperty<T extends Record<string,any>>(array:T[],field:keyof T){
+
+      return Array.from(new Set(array.map(obj => obj[field])));
+    }
