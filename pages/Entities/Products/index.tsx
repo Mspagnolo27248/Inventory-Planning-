@@ -9,86 +9,80 @@ type FilterStateObject<T> = {
   [K in keyof T]: string;
 };
 
-
-export default function Products() {
-  const productsUrl = process.env.NEXT_PUBLIC_BACKEND_PRODUCTS;
-  const { danger, success, warning } = useAlert();
-  const [tableData, setTableData] = useState<IProducts[]>();
-  const [filters, setFilters] = useState<FilterStateObject<IProducts>>({} as FilterStateObject<IProducts>);
-  const [dataKeys, setDataKeys] = useState<Array<keyof IProducts>>([]);
-
-  const indexedData: [string, IProducts][] | undefined = tableData?.map(
-    (item, idx) => [String(idx), item]
-  );
-
-  const {
-    sortedData,
-    sortedColumn,
-    sortDirection,
-    handleSort,
-    getSortIndicator,
-  } = useSort<IProducts>(indexedData);
-
-
-  const handleInputChange = (columnName: keyof IProducts, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [columnName]: value,
-    }));
-  };
-
-
-
-  
-  /*Conditonal States*/
-  const [isloading, setIsLoading] = useState(false);
-
-
-
-  /*Page Load*/
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getFromApi<IProducts[]>(productsUrl!);
-        //Check for id field if not add one. 
-        setTableData(data);
-        setDataKeys(Object.keys(data[0]) as Array<keyof IProducts>);
-      } catch (error: any) {
-        danger(error.message);
-      }
-      setIsLoading(false);
-    };
-    fetchData();
-  },[]);
-
-let filteredData = sortedData?.map(([key,value])=>value);
-
-if(filters&&sortedData){
-filteredData = filterArray<IProducts>(sortedData.map(([key,value])=>value),filters);
-};
-
 function filterArray<T>(array: T[], filters: FilterStateObject<T>): T[] {
   return array.filter(item => {
-    // Check if all filter conditions are satisfied for the current item
     return Object.keys(filters).every(key => {
       const filterValue = filters[key as keyof T];
-      // Skip filtering if the filter value is undefined
       if (filterValue === undefined) return true;
-      // Perform case-insensitive string matching for filter values
       return String(item[key as keyof T]).toLowerCase().includes(filterValue.toLowerCase());
     });
   });
 }
 
 
-const resetFilters= (prev:FilterStateObject<IProducts>) => {
+const resetFilters = <T,>(prev:FilterStateObject<T>) => {
   const output = {...prev};
  for(const key of Object.keys(prev)){
-  output[key as keyof IProducts] = '';
+  output[key as keyof T] = '';
  }
  return output;
 }
+
+
+const handleInputChange = <T,>(columnName: keyof T, value: string,setStateFunction:React.Dispatch<React.SetStateAction<T>>) => {
+  setStateFunction((prev) => ({
+    ...prev,
+    [columnName]: value,
+  }));
+};
+
+
+export default function Products() {
+  const productsUrl = process.env.NEXT_PUBLIC_BACKEND_PRODUCTS;
+  const [isloading, setIsLoading] = useState(false);
+  const { danger, success, warning } = useAlert();
+  const [tableData, setTableData] = useState<IProducts[]>();
+  const [filters, setFilters] = useState<FilterStateObject<IProducts>>({} as FilterStateObject<IProducts>); //move to customer hook
+  const [dataKeys, setDataKeys] = useState<Array<keyof IProducts>>([]);
+
+
+    /*Page Load*/
+    useEffect(() => {
+      const fetchData = async () => {
+        setIsLoading(true);
+        try {
+          const data = await getFromApi<IProducts[]>(productsUrl!);
+          //Check for id field if not add one. 
+          setTableData(data);
+          setDataKeys(Object.keys(data[0]) as Array<keyof IProducts>);
+        } catch (error: any) {
+          danger(error.message);
+        }
+        setIsLoading(false);
+      };
+      fetchData();
+    },[]);
+  
+
+  const { /*useSort Hook*/
+    sortedData,
+    sortedColumn,
+    sortDirection,
+    handleSort,
+    getSortIndicator,
+  } = useSort<IProducts>(tableData);
+
+
+  
+
+let filteredData = [] as IProducts[];
+
+if(filters&&sortedData){
+filteredData = filterArray<IProducts>([...sortedData],filters);
+};
+
+
+
 
 
 
@@ -123,7 +117,7 @@ const resetFilters= (prev:FilterStateObject<IProducts>) => {
                   <td key={key}>
                     <input 
                       type="search"
-                      onChange={(e) => handleInputChange(key, e.target.value)}
+                      onChange={(e) => handleInputChange(key, e.target.value,setFilters)}
                       value={filters[key]}
                     />
                   </td>
