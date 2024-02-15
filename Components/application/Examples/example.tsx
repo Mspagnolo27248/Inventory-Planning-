@@ -20,3 +20,11 @@ export function useCustomHook() {
     )
   };
 }
+// Example Usage
+//  const { count, increment, CustomComponent } = useCustomHook();
+
+// {/* <h1>Parent Component</h1>
+// {/* You can use the count value and the CustomComponent */}
+// <p>Count: {count}</p>
+// <CustomComponent />
+// <button onClick={increment}>Increment from Parent</button> */}
