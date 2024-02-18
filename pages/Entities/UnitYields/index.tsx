@@ -1,13 +1,13 @@
-import { getFromApi } from '@/class-libraries/utils/fetch-helper/fetch-helper';
+import { getFromApi, getFromApiAndSetState } from '@/class-libraries/utils/fetch-helper/fetch-helper';
 import { round } from '@/class-libraries/utils/math-helper/math-helper';
-import StandardTable, { ColumnConfig } from '@/components/general/StandardTable/StandardTable'
+import Table, { ColumnConfig } from '@/components/general/Table/Table';
 import React, { useEffect, useState } from 'react'
 
 
 
 function UnitYields() {
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_UNIT_YIELDS !;
-    const [tableData,setTableData]= useState<UnitYields[]>();
+    const [tableData,setTableData]= useState<UnitYields[]>([]);
     const tableColumns:ColumnConfig<UnitYields>[] = [
         {name:'Unit'},
    {name:'Charge_ProductCode',friendlyName:'Charge Product'},
@@ -21,11 +21,13 @@ function UnitYields() {
     ]
            
     useEffect(()=>{  /*Page Load Event */
-    const pageload = async()=>{
-        const data = await getFromApi<UnitYields[]>(apiUrl);
-        setTableData(data);
-    }
-    pageload();
+    // async function load() {
+    //     const data =  await   getFromApi<UnitYields[]>(apiUrl);
+    //     setTableData(data);
+    // }
+    // load();
+    getFromApiAndSetState(setTableData,apiUrl)
+ 
     },[])
   return (
     <div>
@@ -34,11 +36,14 @@ function UnitYields() {
         </section>
 
         <section>
-            {tableData &&  <StandardTable data={tableData} columns={tableColumns}/>}
+            {tableData &&  <Table data={tableData} columns={tableColumns}/>}
         </section>
     </div>
   )
 }
 
 export default UnitYields;
+
+
+
 
