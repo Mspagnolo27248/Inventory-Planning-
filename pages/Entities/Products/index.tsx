@@ -11,12 +11,12 @@ import useTableFilter from "@/hooks/useArrayFilter";
 
 
 
-const handleInputChange = <T,>(columnName: keyof T, value: string,setStateFunction:React.Dispatch<React.SetStateAction<T>>) => {
-  setStateFunction((prev) => ({
-    ...prev,
-    [columnName]: value,
-  }));
-};
+// const handleInputChange = <T,>(columnName: keyof T, value: string,setStateFunction:React.Dispatch<React.SetStateAction<T>>) => {
+//   setStateFunction((prev) => ({
+//     ...prev,
+//     [columnName]: value,
+//   }));
+// };
 
 export default function Products() {
   const productsUrl = process.env.NEXT_PUBLIC_BACKEND_PRODUCTS;
@@ -61,7 +61,7 @@ export default function Products() {
   const { /*useFilter Hook */ 
     filteredData,
     filters,
-    setFilters,
+    handleInputChange,
     resetFilters,
   } = useTableFilter(tableData);
 
@@ -108,9 +108,9 @@ export default function Products() {
                     <input
                       type="search"
                       onChange={(e) =>
-                        handleInputChange(key, e.target.value, setFilters)
+                        handleInputChange(key, e.target.value)
                       }
-                      value={filters[key]}
+                      value={filters[key]||''}
                     />
                   </td>
                 ))}

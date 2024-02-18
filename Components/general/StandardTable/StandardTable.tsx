@@ -42,19 +42,7 @@ const StandardTable: React.FC<StandardTableProps<any>> = <T,>({
     //Allow user to filter
         let filterData = [...tableData];
 
-    // if (filterColumn !== undefined) {
-    //      filterData =  tableData.filter((row) => {
-    //         if (typeof row[filterColumn] === 'string') {
-    //             const propertyValue = row[filterColumn] as string;
-    //             return propertyValue.toLowerCase().includes(filterValue.toLowerCase())
-    //         } else {
-    //             return row[filterColumn] === filterValue
-    //         }
-    //     })
-    // } else {
-    //      filterData = [...tableData]
 
-    // }
 
     //Allows user to sort columns with the  ascending or descending. 
     const sortHandler = (key: keyof T, direction: "ascending" | "descending") => {
