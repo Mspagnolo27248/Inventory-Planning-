@@ -1,122 +1,179 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import { saveAs } from 'file-saver';
-import Papa from 'papaparse';
-import useTableFilter from '@/hooks/useArrayFilter';
-import useSort from '@/hooks/useArraySort';
-import { AiOutlineDownload } from 'react-icons/ai';
+import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { saveAs } from "file-saver";
+import Papa from "papaparse";
+import useTableFilter from "@/hooks/useArrayFilter";
+import useSort from "@/hooks/useArraySort";
+import { AiOutlineDownload, AiOutlineEdit } from "react-icons/ai";
+import { EditableRow } from "./EditableRow";
 
+// type GenericWithInternalId<T extends Record<string, any>> = T & { internalId: string };
 
-export type ColumnConfig<U> = {
-    name: keyof U;
-    friendlyName?: string;
-    formatter?: (row: U,index:number) => ReactNode;
-    isSortable?: boolean;
-    isFilterable?: boolean;
+export type ColumnConfig<U extends Record<string,any>> = {
+  name: keyof U;
+  friendlyName?: string;
+  formatter?: (row: U, index: number) => ReactNode;
+  isSortable?: boolean;
+  isFilterable?: boolean;
+};
+
+interface TableProps<T extends Record<string, any>> {
+  data: T[];
+  columns: ColumnConfig<T>[];
+  idField: keyof T;
+  onRowSave: (rowData:T)=>void;
 }
 
-interface TableProps<T extends Record<string,any>> {
-    data: T[];
-    columns: ColumnConfig<T>[];
-}
+const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
+  data,
+  columns,
+  idField,
+}: TableProps<T>) => {
+  const [tableData, setTableData] = useState<T[]>([]);
+  const tableHeaderRef = useRef<HTMLTableRowElement>(null);
+  const isEditable = true;
+  const isFilterable = true;
+  const [editRow,setEditRow] = useState<string|null>()
+ const [ editFormData,setEditRowData] = useState<T>();
 
+  //Rerender component when data is changed. 
+  useEffect(() => {
+    setTableData([...data]);
+  }, [data]);
 
-
-const Table: React.FC<TableProps<any>> = <T extends Record<string,any>,>({
-    data,
-    columns,
-}: TableProps<T>
-) => {
-    const [tableData, setTableData] = useState<T[]>(data);
-    const tableHeaderRef = useRef<HTMLTableRowElement>(null);
-
-
-    useEffect(()=>{
-        setTableData([...data])
-    },[data])
-
-
-    const { /*useFilter Hook */ 
-    filteredData,
+  const {
+    /*useFilter Hook */ filteredData,
     filters,
     handleInputChange,
     resetFilters,
   } = useTableFilter<T>(tableData);
 
-
-  const { /*useSort Hook*/ 
-   sortedData,
+  const {
+    /*useSort Hook*/ sortedData,
     sortedColumn,
     sortDirection,
     handleSort,
     getSortIndicator,
   } = useSort<T>(filteredData);
 
-        
-    
-    //Uses the 'file-saver' package to export table to csv.
-    const handleExport = () => {
-        const csvData = Papa.unparse(tableData, {
-            columns: columns.map((col) => col.name as string),
-        });
-        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
-        saveAs(blob, 'table.csv');
-    };
 
-    return (
-        <div>
-            <div>
-                <button onClick={resetFilters}>Clear Filters</button>   
-                <AiOutlineDownload onClick={handleExport} size={24}></AiOutlineDownload></div>
-            <div>
-                
-    
-            <table>
-                <thead>
-                    <tr ref={tableHeaderRef}>
-                        {columns.map((headerConfig, idx) => {
+  //Uses the 'file-saver' package to export table to csv.
+  const handleExport = () => {
+    const csvData = Papa.unparse(tableData, {
+      columns: columns.map((col) => col.name as string),
+    });
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+    saveAs(blob, "table.csv");
+  };
 
-                            return (
-                                <th key={idx} onClick={() => handleSort(headerConfig.name)}>
-                                {String(headerConfig.friendlyName??headerConfig.name)}
-                                {getSortIndicator(headerConfig.name)}
-                              </th>
-                            )
-                        })}
-                    </tr>
-                 
-                    <tr>
-                    {columns.map((headerConfig,idx) => (
+
+
+  const handleEditClick = (record:T) => {
+    setEditRow(record[idField]);
+    setEditRowData(record);
+  };
+
+
+  const handleEditFormSubmit = async () => {
+   alert(JSON.stringify(editFormData))
+  };
+
+  const handleEditFormChange= (event:React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const name = event.target.getAttribute("name") as keyof T;
+    const value = event.target.value;
+    const newFormData = { ...editFormData! };
+    newFormData[name] = value as T[keyof T]; // Ensure type safety here
+    setEditRowData(newFormData);
+  };
+
+
+
+  return (
+    <div>
+      <div className="table-container">
+        <div className="table-actions-group">
+          <button onClick={resetFilters}>Clear Filters</button>
+          <AiOutlineDownload
+            onClick={handleExport}
+            size={24}
+          ></AiOutlineDownload>
+        </div>
+        <table>
+          <thead>
+            {/* Generate Header Row */}
+            <tr ref={tableHeaderRef}>
+              {columns.map((headerConfig, idx) => {
+                return (
+                  <th key={idx} onClick={() => handleSort(headerConfig.name)}>
+                    {String(headerConfig.friendlyName ?? headerConfig.name)}
+                    {getSortIndicator(headerConfig.name)}
+                  </th>
+                );
+              })}
+              {isEditable && <th></th>}
+            </tr>
+            {/* Generate Filter Row */}
+            {isFilterable && (
+              <tr>
+                {columns.map((headerConfig, idx) => (
                   <td key={String(headerConfig.name)}>
                     <input
                       type="search"
                       onChange={(e) =>
                         handleInputChange(headerConfig.name, e.target.value)
                       }
-                      value={filters[headerConfig.name]||''}
+                      value={filters[headerConfig.name] || ""}
                     />
                   </td>
                 ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {sortedData!.map((record, rowIndex) => {
-                        return (
-                            <tr key={rowIndex}>
-                                {columns.map((col, idx) => {
-                                    return col.formatter ? (<td key={idx}>{col.formatter(record,rowIndex)}</td>
-                                    ) : (<td key={idx}>{String(record[col.name])}</td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}</tbody>
-            </table>
-            </div>
-           
-        </div>
-    )
-}
+              </tr>
+            )}
+          </thead>
+          <tbody>
+        
+            {/* Generate Table Rows from Sorted and Filtered Data */}
+            {sortedData!.map((record, rowIndex) => {
+              return (
+                <React.Fragment key={record[idField]}>
+                <tr key={record[idField]}>
+                    {/* Generate Row Cells from each object use values or Formatter if avaialble*/}
+                  {columns.map((col, idx) => {
+                    return col.formatter ? (
+                      <td key={idx}>{col.formatter(record, rowIndex)}</td>
+                    ) : (
+                      <td key={idx}>{String(record[col.name])}</td>
+                    );
+                  })}
 
+                  {/* If isEditable show edit button */}
+                  {isEditable && (
+                    <td>                  
+                      <AiOutlineEdit
+                        size={24}
+                        onClick={() => {
+                          handleEditClick(record);
+                        }}
+                      ></AiOutlineEdit>
+                    </td>
+                  )}
+                </tr>
+                {(editRow===record[idField]) && 
+                <EditableRow<T>
+                    item={editFormData!}
+                    columnConfig={columns}
+                    idField={idField}
+                    handleEditClick={handleEditClick}
+                    handleEditFormChange={handleEditFormChange}
+                    handleEditFormSubmit={handleEditFormSubmit}
+                  />}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
-export default Table
-
+export default Table;
