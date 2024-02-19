@@ -144,3 +144,20 @@ export async function getFromApiAndSetState<T extends object>(
     console.error("Error fetching data:", error);
   }
 }
+
+
+// export function addIdPropertyToArray<T>(data: T[], idFieldName = 'internalId'): (T & { [K in typeof idFieldName]: string })[] {
+//   const dataWithId = data.map((record, idx) => ({
+//     ...record,
+//     [idFieldName]: String(idx),
+//   }));
+//   return dataWithId;
+// }
+
+export function addIdPropertyToArray<T, K extends string='internalId'>(data: T[], idFieldName: K = 'internalId' as K): (T & { [P in K]: string })[] {
+  const dataWithId = data.map((record, idx) => ({
+    ...record,
+    [idFieldName]: String(idx),
+  })) as (T & { [P in K]: string })[];
+  return dataWithId;
+}
