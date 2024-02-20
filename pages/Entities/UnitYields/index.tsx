@@ -3,10 +3,9 @@ import { addIdPropertyToArray,getFromApi, putToApi,} from "@/class-libraries/uti
 import { round } from "@/class-libraries/utils/math-helper/math-helper";
 import Table, { ColumnConfig } from "@/components/general/Table/Table";
 import { useAlert } from "@/contexts/Alert/AlertContext";
+import { GenericWithInternalIdField } from "@/types/types";
 
-type GenericWithInternalIdField<T extends Record<string, any>> = T & {
-  internalId: string;
-}; 
+
 
 function UnitYields() {
   const apiUrl = process.env.NEXT_PUBLIC_BACKEND_UNIT_YIELDS!;
