@@ -9,8 +9,9 @@ import { RiseLoader } from 'react-spinners';
 function BlendRequirement() {
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_BLEND_REQUIREMENTS!;
     const {success,danger} = useAlert();
-    const [isLoading,setIsLoading] = useState(false);
+    const [isLoading,setIsLoading] = useState(true);
     const [tableData,setTableData] = useState<GenericWithInternalIdField<BlendRequirements>[]>([]);
+
     const tableColumns:ColumnConfig<BlendRequirements>[] = [
         {name:'Finished_ProductCode'},
         {name:'Finished_ProductDesc'},
@@ -20,7 +21,6 @@ function BlendRequirement() {
             return `${row.BlendPercent.toFixed(2)}%`
         },}
     ]
-
 
     useEffect(()=>{   
       setIsLoading(true)     
@@ -33,10 +33,8 @@ function BlendRequirement() {
         console.error(err)
         danger('Error Connecting to WEB API')
       }
-      setIsLoading(false)
-   
-    },[]);
-
+      setIsLoading(false)   
+    },[apiUrl,danger]);
 
     const handleRowSave = async (rowData: BlendRequirements) => {
         try{
@@ -54,26 +52,21 @@ function BlendRequirement() {
 
   return (
     <div>
-    <div>BlendRequirement</div>
+    <div><h1>Finished Blend Requirement</h1></div>
     <section>
-      <RiseLoader loading={isLoading}/>
-    {tableData && (
+      <RiseLoader color={'red'} loading={isLoading}/>
           <Table
             data={tableData}
             columns={tableColumns}
             idField={"internalId"}
             onRowSave={handleRowSave}
-          />
-        )}
+          />      
       </section>
     </div>
-
   )
 }
 
 export default BlendRequirement
-
-
 
   async function getAndSetTableData<T>(apiUrl: string, setState: React.Dispatch<React.SetStateAction<T[]>>) {
     try {
