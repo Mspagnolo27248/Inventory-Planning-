@@ -5,9 +5,7 @@ import useTableFilter from "@/hooks/useArrayFilter";
 import useSort from "@/hooks/useArraySort";
 import { AiOutlineDownload, AiOutlineEdit } from "react-icons/ai";
 import { EditableRow } from "./EditableRow";
-import { error } from "console";
 
-// type GenericWithInternalId<T extends Record<string, any>> = T & { internalId: string };
 
 export type ColumnConfig<U extends Record<string, any>> = {
   name: keyof U;
@@ -37,7 +35,7 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
   const [editRow, setEditRow] = useState<string | null>();
   const [editFormData, setEditRowData] = useState<T>({} as T);
 
-  //Rerender component when data is changed.
+  //Re-render component when data is changed.
   useEffect(() => {
     setTableData([...data]);
   }, [data]);
