@@ -3,11 +3,13 @@ import Table, { ColumnConfig } from '@/components/general/Table/Table'
 import { useAlert } from '@/contexts/Alert/AlertContext';
 import { GenericWithInternalIdField } from '@/types/types';
 import React, { useEffect, useState } from 'react'
+import { RiseLoader } from 'react-spinners';
 
 
 function BlendRequirement() {
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_BLEND_REQUIREMENTS!;
     const {success,danger} = useAlert();
+    const [isLoading,setIsLoading] = useState(false);
     const [tableData,setTableData] = useState<GenericWithInternalIdField<BlendRequirements>[]>([]);
     const tableColumns:ColumnConfig<BlendRequirements>[] = [
         {name:'Finished_ProductCode'},
@@ -20,8 +22,19 @@ function BlendRequirement() {
     ]
 
 
-    useEffect(()=>{        
-       getAndSetTableData(apiUrl,setTableData)
+    useEffect(()=>{   
+      setIsLoading(true)     
+      try{
+        getAndSetTableData(apiUrl,setTableData)
+        .catch(err=>{
+          danger('Error Connecting to WEB API')
+        })
+      }catch(err){
+        console.error(err)
+        danger('Error Connecting to WEB API')
+      }
+      setIsLoading(false)
+   
     },[]);
 
 
@@ -43,6 +56,7 @@ function BlendRequirement() {
     <div>
     <div>BlendRequirement</div>
     <section>
+      <RiseLoader loading={isLoading}/>
     {tableData && (
           <Table
             data={tableData}
@@ -60,8 +74,13 @@ function BlendRequirement() {
 export default BlendRequirement
 
 
-  async function getAndSetTableData<T,>( apiUrl:string,setState:React.Dispatch<React.SetStateAction<T[]>>) {
-    const data = await getFromApi<T[]>(apiUrl);
-    const dataWithID = addIdPropertyToArray<T>(data);
-    setState(dataWithID);
+
+  async function getAndSetTableData<T>(apiUrl: string, setState: React.Dispatch<React.SetStateAction<T[]>>) {
+    try {
+      const data = await getFromApi<T[]>(apiUrl);
+      const dataWithID = addIdPropertyToArray<T>(data);
+      setState(dataWithID);
+    } catch (err) {
+      throw err; 
+    }
   }

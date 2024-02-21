@@ -1,5 +1,6 @@
 
 import { useCustomHook } from '@/components/application/Examples/example';
+import { homelinks } from '@/content/PageLinks';
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
@@ -19,7 +20,12 @@ export default function Home() {
       </Head>
       <main >
 <h1>HomePage</h1>
- <Link href={'./Entities/Products'}>Products</Link>
+
+{homelinks.map((link,idx)=>( <div key={idx}>
+      <Link key={idx} href={link.url}>{link.name}</Link>
+    </div>
+
+))}
 
  <div>
 

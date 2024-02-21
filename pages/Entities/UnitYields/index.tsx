@@ -10,6 +10,7 @@ import { GenericWithInternalIdField } from "@/types/types";
 function UnitYields() {
   const apiUrl = process.env.NEXT_PUBLIC_BACKEND_UNIT_YIELDS!;
   const { danger,success} = useAlert();
+  const [isLoading,setIsLoading] = useState(false);
   const [tableData, setTableData] = useState<
     GenericWithInternalIdField<UnitYields>[]
   >([]);
@@ -17,9 +18,17 @@ function UnitYields() {
   //Get the entity data from API and set to state
   //TODO-make pure
   async function getAndSetTableData() {
-    const data = await getFromApi<UnitYields[]>(apiUrl);
-    const dataWithID = addIdPropertyToArray<UnitYields>(data);
-    setTableData(dataWithID);
+    setIsLoading(true);
+    try{
+      const data = await getFromApi<UnitYields[]>(apiUrl);
+      const dataWithID = addIdPropertyToArray<UnitYields>(data);
+      setTableData(dataWithID);
+    } catch (err){
+      console.error(err);
+      danger("Error Connecting to WEB API")
+    }
+    setIsLoading(false);
+  
     //TODO- add data fromatter function to the getFromApiAndSetState func. 
     // getFromApiAndSetState(setTableData,apiUrl)
   }
