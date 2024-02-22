@@ -21,6 +21,7 @@ interface TableProps<T extends Record<string, any>> {
   columns: ColumnConfig<T>[];
   idField: keyof T;
   onRowSave: (rowData: T) => void;
+  onROwDelete: (rowData:T)=>void;
 }
 
 const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
@@ -28,6 +29,7 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
   columns,
   idField,
   onRowSave,
+  onROwDelete,
 }: TableProps<T>) => {
   const [tableData, setTableData] = useState<T[]>([]);
   const tableHeaderRef = useRef<HTMLTableRowElement>(null);
@@ -71,7 +73,7 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
 
   const handleDeleteClick = (record:T) =>{
     setEditRowData(record);
-    alert(`Delete:${JSON.stringify(record)}`)
+    onROwDelete(record);
   }
 
   //On submit 
