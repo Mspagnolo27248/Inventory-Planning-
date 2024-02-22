@@ -1,4 +1,6 @@
 import React, { Fragment, ReactNode } from "react";
+
+import { TiDelete } from "react-icons/ti";
 import {
   AiFillCaretDown,
   AiFillCaretUp,
@@ -90,6 +92,11 @@ function icons() {
           <AiOutlineEdit size={24}></AiOutlineEdit>
           </Iconbox>
           <FaFilterCircleXmark/>
+          <Iconbox>
+          <TiDelete size={24}/>
+
+          </Iconbox>
+        
         </div>
       </div>
     </Fragment>

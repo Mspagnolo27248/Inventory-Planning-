@@ -5,6 +5,7 @@ import useTableFilter from "@/hooks/useArrayFilter";
 import useSort from "@/hooks/useArraySort";
 import { AiOutlineDownload, AiOutlineEdit } from "react-icons/ai";
 import { EditableRow } from "./EditableRow";
+import { TiDelete } from "react-icons/ti";
 
 
 export type ColumnConfig<U extends Record<string, any>> = {
@@ -35,7 +36,7 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
   const [editRow, setEditRow] = useState<string | null>();
   const [editFormData, setEditRowData] = useState<T>({} as T);
 
-  //Re-render component when data is changed.
+  //Rerender component when data is changed.
   useEffect(() => {
     setTableData([...data]);
   }, [data]);
@@ -67,6 +68,11 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
     setEditRow(record[idField]);
     setEditRowData(record);
   };
+
+  const handleDeleteClick = (record:T) =>{
+    setEditRowData(record);
+    alert(`Delete:${JSON.stringify(record)}`)
+  }
 
   //On submit 
   const handleEditFormSubmit = async () => {
@@ -155,7 +161,10 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
                           }}
                         ></AiOutlineEdit>
                       </td>
+                    
                     )}
+
+                  {isEditable && <td> <TiDelete size={24} onClick={()=>{handleDeleteClick(record)}}/></td>}
                   </tr>
                   {editRow === record[idField] && (
                     <EditableRow<T>
