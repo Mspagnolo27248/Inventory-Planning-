@@ -60,6 +60,9 @@ function Page<T extends Record<string, any>>({
     }, apiUrl) as string;
   };
 
+  const onRowDelete = (rowData:T)=>{
+    alert(`Delete:${JSON.stringify(rowData)}`);
+  }
   return (
     <div>
       <div>
@@ -72,6 +75,7 @@ function Page<T extends Record<string, any>>({
           columns={tableColumns}
           idField={"internalId"}
           onRowSave={handleRowSave}
+          onROwDelete={onRowDelete}
         />
       </section>
     </div>

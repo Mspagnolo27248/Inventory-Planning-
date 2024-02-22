@@ -6,7 +6,7 @@ import useSort from "@/hooks/useArraySort";
 import { AiOutlineDownload, AiOutlineEdit } from "react-icons/ai";
 import { EditableRow } from "./EditableRow";
 import { TiDelete } from "react-icons/ti";
-
+import { IoAddCircle } from "react-icons/io5";
 
 export type ColumnConfig<U extends Record<string, any>> = {
   name: keyof U;
@@ -104,6 +104,7 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
             onClick={handleExport}
             size={24}
           ></AiOutlineDownload>
+          <IoAddCircle size={24} onClick={()=>alert("Add Me")}></IoAddCircle>
         </div>
         <table>
           <thead>
