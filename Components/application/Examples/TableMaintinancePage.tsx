@@ -3,8 +3,8 @@ import { RiseLoader } from "react-spinners";
 import Table, { ColumnConfig } from "@/components/general/Table/Table";
 import { useAlert } from "@/contexts/Alert/AlertContext";
 import { GenericWithInternalIdField } from "@/types/types";
-import { addIdPropertyToArray, deleteToApi, getFromApi, putToApi } from "@/class-libraries/utils/fetch-helper/fetch-helper";
-
+import { addIdPropertyToArray, deleteToApi, generateObjectKeysWithStringValues, getFromApi, putToApi } from "@/class-libraries/utils/fetch-helper/fetch-helper";
+import { IoAddCircle } from "react-icons/io5";
 
 interface PageProps<T extends Record<string, any>> {
   title: string;
@@ -23,6 +23,8 @@ function Page<T extends Record<string, any>>({
   const { success, danger } = useAlert();
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState<GenericWithInternalIdField<T>[]>([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const initalFormData = (tableData[0]?generateObjectKeysWithStringValues(Object.keys(tableData[0])):{}) as T;
 
   useEffect(() => {//Pageload Event
     fetchData();
@@ -94,8 +96,9 @@ function Page<T extends Record<string, any>>({
           columns={tableColumns}
           idField={"internalId"}
           onRowSave={handleRowSave}
-          onRowDelete={handleRowDelete}
-          onRowAdd={handleRowAdd}
+          onRowDelete={handleRowDelete}          
+          isFilterable 
+          isEditable   
         />
       </section>
     </div>
