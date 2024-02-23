@@ -50,6 +50,11 @@ function BlendRequirement() {
         } 
       };
 
+
+    const handleRowDelete = async(rowData:BlendRequirements)=>{
+      alert(`Delete: ${JSON.stringify(rowData)}`)
+    }
+
   return (
     <div>
     <div><h1>Finished Blend Requirement</h1></div>
@@ -60,6 +65,7 @@ function BlendRequirement() {
             columns={tableColumns}
             idField={"internalId"}
             onRowSave={handleRowSave}
+            onRowDelete={handleRowDelete}
           />      
       </section>
     </div>

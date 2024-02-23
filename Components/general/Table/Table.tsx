@@ -7,6 +7,8 @@ import { AiOutlineDownload, AiOutlineEdit } from "react-icons/ai";
 import { EditableRow } from "./EditableRow";
 import { TiDelete } from "react-icons/ti";
 import { IoAddCircle } from "react-icons/io5";
+import AddItemForm from "./AddForm";
+import { generateObjectKeysWithStringValues } from "@/class-libraries/utils/fetch-helper/fetch-helper";
 
 export type ColumnConfig<U extends Record<string, any>> = {
   name: keyof U;
@@ -21,7 +23,9 @@ interface TableProps<T extends Record<string, any>> {
   columns: ColumnConfig<T>[];
   idField: keyof T;
   onRowSave: (rowData: T) => void;
-  onROwDelete: (rowData:T)=>void;
+  onRowDelete: (rowData: T) => void;
+  onRowAdd: (rowData: T) => Promise<any>;
+  validate?:(formData:T)=>Record<keyof T,string>
 }
 
 const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
@@ -29,7 +33,9 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
   columns,
   idField,
   onRowSave,
-  onROwDelete,
+  onRowDelete,
+  onRowAdd,
+  validate
 }: TableProps<T>) => {
   const [tableData, setTableData] = useState<T[]>([]);
   const tableHeaderRef = useRef<HTMLTableRowElement>(null);
@@ -37,6 +43,8 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
   const isFilterable = true;
   const [editRow, setEditRow] = useState<string | null>();
   const [editFormData, setEditRowData] = useState<T>({} as T);
+  const [showAddForm, setShowAddForm] = useState(false);
+
 
   //Rerender component when data is changed.
   useEffect(() => {
@@ -58,7 +66,7 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
 
   //Uses the 'file-saver' package to export table to csv.
   const handleExport = () => {
-    const csvData = Papa.unparse(tableData, {
+    const csvData = Papa.unparse(filteredData, {
       columns: columns.map((col) => col.name as string),
     });
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
@@ -71,21 +79,20 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
     setEditRowData(record);
   };
 
-  const handleDeleteClick = (record:T) =>{
+  const handleDeleteClick = (record: T) => {
     setEditRowData(record);
-    onROwDelete(record);
-  }
+    onRowDelete(record);
+  };
 
-  //On submit 
+  //On submit
   const handleEditFormSubmit = async () => {
-    try{
-      onRowSave(editFormData)
+    try {
+      onRowSave(editFormData);
       setEditRow(null);
       resetFilters();
-    } catch(err){
-      console.error(err)
+    } catch (err) {
+      console.error(err);
     }
-
   };
 
   const handleEditFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +104,8 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
     setEditRowData(newFormData);
   };
 
+  const initalFormData = (tableData[0]?generateObjectKeysWithStringValues(Object.keys(tableData[0])):{}) as T;
+
   return (
     <div>
       <div className="table-container">
@@ -106,8 +115,19 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
             onClick={handleExport}
             size={24}
           ></AiOutlineDownload>
-          <IoAddCircle size={24} onClick={()=>alert("Add Me")}></IoAddCircle>
+          <IoAddCircle
+            size={24}
+            onClick={() => setShowAddForm(true)}
+          ></IoAddCircle>
         </div>
+        {showAddForm && (
+          <AddItemForm 
+          initalData={initalFormData} 
+          submitHandler={onRowAdd} 
+          cancelForm={()=>{setShowAddForm(false)}}
+          validate={validate}/>
+        )}
+
         <table>
           <thead>
             {/* Generate Header Row */}
@@ -164,10 +184,19 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
                           }}
                         ></AiOutlineEdit>
                       </td>
-                    
                     )}
 
-                  {isEditable && <td> <TiDelete size={24} onClick={()=>{handleDeleteClick(record)}}/></td>}
+                    {isEditable && (
+                      <td>
+                        {" "}
+                        <TiDelete
+                          size={24}
+                          onClick={() => {
+                            handleDeleteClick(record);
+                          }}
+                        />
+                      </td>
+                    )}
                   </tr>
                   {editRow === record[idField] && (
                     <EditableRow<T>

@@ -1,16 +1,22 @@
+import { error } from "console";
 import React, { useState } from "react";
 
 type FormProps<T extends Record<string, any>> = {
   initalData: T;
-  submitHandler: (formData: T) => Promise<any>;
-  cancelForm: () => void;
+  submitHandler: (formData: T) => void;
   validate?: (formData: T) => Record<keyof T, string>;
 };
 
-function AddForm<T extends Record<string, any>>(
-  {initalData,submitHandler,validate,cancelForm}: FormProps<T>) {
+function Form<T extends Record<string, any>>({
+  initalData,
+  submitHandler,
+  validate,
+}: FormProps<T>) {
+
   const [formData, setFormData] = useState<T>(initalData);
-  const [formErrors, setFormErrors] = useState<Record<keyof T, string>>({} as Record<keyof T, string>);
+  const [formErrors, setFormErrors] = useState<Record<keyof T, string>>(
+    {} as Record<keyof T, string>
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -22,28 +28,16 @@ function AddForm<T extends Record<string, any>>(
     }));
   };
 
-  const onSubmitHandler = async (e: React.FormEvent) => {
+  const onSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
     const errors = validate
       ? validate(formData)
       : ({} as Record<keyof T, string>);
     setFormErrors(errors);
     if (Object.keys(formErrors).length === 0) {
-
-      submitHandler(formData)
-      .then(()=>{
-        setFormData({...initalData})
-      })
-      .catch(()=>{
-        alert("Error")
-      }
-      
-      );
-
-      }
-      
+      submitHandler(formData);
     }
-  
+  };
 
   return (
     <div>
@@ -58,18 +52,13 @@ function AddForm<T extends Record<string, any>>(
               value={formData[key]}
               onChange={handleChange}
             />
-            {formErrors[key] && <p>{formErrors[key]}</p>}
+            {formErrors[key]&& <p>{formErrors[key]}</p>}
           </div>
-        ))}
-        <div>
-          <button type="submit">Add</button>
-          <button type="button" onClick={cancelForm}>
-            Cancel
-          </button>
-        </div>
+        ))};
+        <button type="submit">Add</button>
       </form>
     </div>
   );
 }
 
-export default AddForm;
+export default Form;

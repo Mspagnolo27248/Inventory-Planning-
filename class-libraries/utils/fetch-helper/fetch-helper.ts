@@ -1,3 +1,5 @@
+type Fetcher<T> = () => Promise<T>;
+
 export async function getFromApi<T>(uri: string): Promise<T> {
   return new Promise((resolve, reject) => {
     fetch(uri, {
@@ -20,25 +22,7 @@ export async function getFromApi<T>(uri: string): Promise<T> {
   });
 }
 
-// export async function getFromApi<T>(uri: string): Promise<T> {
-//   try {
-//     const response = await fetch(uri, {
-//       method: 'GET',
-//       headers: {
-//         'Accept': 'application/json',
-//         'Content-Type': 'application/json'
-//       }
-//     });
 
-//     if (!response.ok) {
-//       throw new Error(`Network response was not ok status: ${response.status}`);
-//     }
-
-//     return await response.json();
-//   } catch (error) {
-//     throw new Error(`Error fetching data from ${uri}: ${error.message}`);
-//   }
-// }
 /**
  * Helper function to make a POST request to an API endpoint with the provided data.
  * @param uri The URI of the API endpoint.
@@ -97,7 +81,36 @@ export async function putToApi<T>(uri: string, data: any): Promise<T> {
   });
 }
 
-type Fetcher<T> = () => Promise<T>;
+/**
+ * Helper function to make a PUT request to an API endpoint with the provided data.
+ * @param uri The URI of the API endpoint.
+ * @param data The data to be sent in the request body.
+ * @returns A promise that resolves to the response data.
+ */
+export async function deleteToApi<T>(uri: string, data: any): Promise<T> {
+  return new Promise((resolve, reject) => {
+    fetch(uri, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          reject(
+            new Error(`Network response was not ok status:${response.status}`)
+          );
+        }
+        return response.json();
+      })
+      .then((data) => resolve(data))
+      .catch((error: Error) => reject(error));
+  });
+}
+
+
 
 export function getFromCacheOrFetcher<T>(
   cacheName: string,
@@ -146,13 +159,7 @@ export async function getFromApiAndSetState<T extends object>(
 }
 
 
-// export function addIdPropertyToArray<T>(data: T[], idFieldName = 'internalId'): (T & { [K in typeof idFieldName]: string })[] {
-//   const dataWithId = data.map((record, idx) => ({
-//     ...record,
-//     [idFieldName]: String(idx),
-//   }));
-//   return dataWithId;
-// }
+
 
 export function addIdPropertyToArray<T, K extends string='internalId'>(data: T[], idFieldName: K = 'internalId' as K): (T & { [P in K]: string })[] {
   const dataWithId = data.map((record, idx) => ({
@@ -161,3 +168,32 @@ export function addIdPropertyToArray<T, K extends string='internalId'>(data: T[]
   })) as (T & { [P in K]: string })[];
   return dataWithId;
 }
+
+
+
+export function generateObjectKeysWithStringValues<T>(dataKeys: Array<keyof T>): Record<keyof T,string> {
+  const output = {} as Record<keyof T,string>;
+  dataKeys.forEach(key => {
+    output[key] = '';
+  });
+  return output;
+}
+// export async function getFromApi<T>(uri: string): Promise<T> {
+//   try {
+//     const response = await fetch(uri, {
+//       method: 'GET',
+//       headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json'
+//       }
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`Network response was not ok status: ${response.status}`);
+//     }
+
+//     return await response.json();
+//   } catch (error) {
+//     throw new Error(`Error fetching data from ${uri}: ${error.message}`);
+//   }
+// }

@@ -3,21 +3,23 @@ import { RiseLoader } from "react-spinners";
 import Table, { ColumnConfig } from "@/components/general/Table/Table";
 import { useAlert } from "@/contexts/Alert/AlertContext";
 import { GenericWithInternalIdField } from "@/types/types";
-import { addIdPropertyToArray, getFromApi, putToApi } from "@/class-libraries/utils/fetch-helper/fetch-helper";
+import { addIdPropertyToArray, deleteToApi, getFromApi, putToApi } from "@/class-libraries/utils/fetch-helper/fetch-helper";
+
 
 interface PageProps<T extends Record<string, any>> {
   title: string;
   apiUrl: string;
-  idKeys: (keyof T)[];
+  keyFields: (keyof T)[];
   tableColumns: ColumnConfig<T>[];
 }
 
 function Page<T extends Record<string, any>>({
   title,
   apiUrl,
-  idKeys,
+  keyFields,
   tableColumns,
 }: PageProps<T>) {
+  
   const { success, danger } = useAlert();
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState<GenericWithInternalIdField<T>[]>([]);
@@ -41,9 +43,9 @@ function Page<T extends Record<string, any>>({
 
   const handleRowSave = async (rowData: T) => {
     try {
-      const endpoint = generateEndpoint(rowData);
-      await putToApi<T>(apiUrl, rowData);
-      const newData = await getFromApi<T[]>(endpoint);
+      const endpoint = generateEndpoint(rowData,keyFields);
+      await putToApi<T>(endpoint,rowData);
+      const newData = await getFromApi<T[]>(apiUrl);
       const newDataWithID = addIdPropertyToArray<T>(newData);
       setTableData(newDataWithID);
       success("Data Saved Successfully");
@@ -53,16 +55,33 @@ function Page<T extends Record<string, any>>({
     }
   };
 
-  const generateEndpoint = (rowData: T) => {
-    return idKeys.reduce((acc, key) => {
+  const handleRowDelete = async (rowData:T)=>{
+    try {
+      const endpoint = generateEndpoint(rowData,keyFields);
+      await deleteToApi<T>(endpoint,rowData);
+      const newData = await getFromApi<T[]>(apiUrl);
+      const newDataWithID = addIdPropertyToArray<T>(newData);
+      setTableData(newDataWithID);
+      success("Data Saved Successfully");
+    } catch (err) {
+      console.error(err);
+      danger("Error Saving Data");
+    }
+
+  }
+
+  const handleRowAdd = async (rowData:T)=>{
+    throw new Error(JSON.stringify(rowData))
+
+  }
+  //Generic Move to Class Library
+  const generateEndpoint = (rowData: T,idKeyFields:Array<keyof T>) => {
+    return idKeyFields.reduce((acc, key) => {
       const value = rowData[key];
       return `${String(acc)}/${value}`;
     }, apiUrl) as string;
   };
 
-  const onRowDelete = (rowData:T)=>{
-    alert(`Delete:${JSON.stringify(rowData)}`);
-  }
   return (
     <div>
       <div>
@@ -75,7 +94,8 @@ function Page<T extends Record<string, any>>({
           columns={tableColumns}
           idField={"internalId"}
           onRowSave={handleRowSave}
-          onROwDelete={onRowDelete}
+          onRowDelete={handleRowDelete}
+          onRowAdd={handleRowAdd}
         />
       </section>
     </div>
