@@ -76,6 +76,7 @@ function Page<T extends Record<string, any>>({
     throw new Error(JSON.stringify(rowData))
 
   }
+  
   //Generic Move to Class Library
   const generateEndpoint = (rowData: T,idKeyFields:Array<keyof T>) => {
     return idKeyFields.reduce((acc, key) => {

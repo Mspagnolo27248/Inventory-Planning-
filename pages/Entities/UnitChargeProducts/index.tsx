@@ -1,12 +1,11 @@
-import { getFromApi } from '@/class-libraries/utils/fetch-helper/fetch-helper';
-import StandardTable, { ColumnConfig } from '@/components/general/StandardTable/StandardTable'
-import React, { useEffect, useState } from 'react'
+import Page from '@/components/application/Examples/TableMaintinancePage';
+import { ColumnConfig } from '@/components/general/StandardTable/StandardTable'
+import React  from 'react'
 
 
 
 function UnitChargeProducts() {
     const apiUrlUnitChrageProducts = process.env.NEXT_PUBLIC_BACKEND_PRODUCTS!;
-    const [tableData,setTableData]= useState<UnitChargeProducts[]>();
     const tableColumns:ColumnConfig<UnitChargeProducts>[] = [
         {name:'Unit'},
         {name:'Charge_ProductCode',friendlyName:"Charge Product"},
@@ -14,21 +13,16 @@ function UnitChargeProducts() {
         {name:'MaxDailyRate'}
     ]
            
-    useEffect(()=>{  /*Page Load Event */
-    const pageload = async()=>{
-        const data = await getFromApi<UnitChargeProducts[]>(apiUrlUnitChrageProducts);
-        setTableData(data);
-    }
-    },[])
+const keyFields: Array<keyof UnitChargeProducts> = ['Unit','Charge_ProductCode']
+
   return (
     <div>
-        <section>
-            Unit Charge Products
-        </section>
-
-        <section>
-            {tableData &&  <StandardTable data={tableData} columns={tableColumns}/>}
-        </section>
+        <Page
+        title='Unit Charge Products Maintinance'
+        apiUrl={apiUrlUnitChrageProducts}
+        keyFields={keyFields}
+        tableColumns={tableColumns}
+        />
     </div>
   )
 }

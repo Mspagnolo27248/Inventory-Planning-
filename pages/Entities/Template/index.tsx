@@ -22,7 +22,7 @@ export default function Template() {
         title={title}
         apiUrl={apiUrl}
         tableColumns={tableColumns}
-        idKeys={idKeys}
+        keyFields={idKeys}
       />
     );
   }
