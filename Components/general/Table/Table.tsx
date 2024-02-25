@@ -90,11 +90,12 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
 
   return (
     <div>
-      <div className="table-container">
+      <div className=''>
         <div className="table-actions-group">
           <button onClick={resetFilters}>Clear Filters</button>
           <AiOutlineDownload onClick={handleExport} size={24} />
         </div>
+        <div className="table-container">
         <table>
           <thead>
             {/* Generate Header Row */}
@@ -178,6 +179,7 @@ const Table: React.FC<TableProps<any>> = <T extends Record<string, any>>({
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -197,3 +197,17 @@ export function generateObjectKeysWithStringValues<T>(dataKeys: Array<keyof T>):
 //     throw new Error(`Error fetching data from ${uri}: ${error.message}`);
 //   }
 // }
+
+export const fetchDataAndAddId = async <T,>(apiUrl:string,setData:React.Dispatch<React.SetStateAction<(T & {
+  internalId: string;
+})[]|undefined>>,setLoading:React.Dispatch<React.SetStateAction<boolean>>) => {
+  setLoading(true);
+  try {
+    const data = await getFromApi<T[]>(apiUrl);
+    const dataWithID = addIdPropertyToArray<T>(data);
+    setData(dataWithID);
+  } catch (err) {
+    console.error(err);          
+  }
+  setLoading(false);
+};

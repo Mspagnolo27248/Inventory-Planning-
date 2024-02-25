@@ -92,14 +92,6 @@ export function dateAdd(startDateString: string, interval: string, increment: st
 }
 
 
-//Convert mm/dd/yyyy to yyyymmdd
-// export function convertDateFormat(dateString: string): string {
-//   const parts = dateString.split('/');
-//   const year = parts[2];
-//   const month = parts[0].padStart(2, '0');
-//   const day = parts[1].padStart(2, '0');
-//   return `${year}${month}${day}`;
-// }
 
 
 
@@ -211,6 +203,23 @@ export function toSqlDateTime(date?: Date) {
 
 
 
+export function customDateFormat(date:Date, formatter:(month:number,day:number,year:number)=>string) {
+  const dateValue = new Date(date);
+  const month = dateValue.getMonth() + 1; // Add 1 because getMonth() returns zero-based index
+  const day = dateValue.getDate();
+  const year = dateValue.getFullYear();
+  return formatter(month, day, year);
+}
+
+// // Example of a formatter function to format date as "mm/dd/yyyy"
+// function formatDateAsMMDDYYYY(month, day, year) {
+//   // Pad single digits with leading zeros
+//   const paddedMonth = month < 10 ? '0' + month : month;
+//   const paddedDay = day < 10 ? '0' + day : day;
+
+//   // Return formatted date string
+//   return `${paddedMonth}/${paddedDay}/${year}`;
+// }
 
 
 

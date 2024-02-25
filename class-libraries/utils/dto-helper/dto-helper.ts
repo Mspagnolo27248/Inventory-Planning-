@@ -55,3 +55,17 @@ export function sumOfProperty<T>(array: T[], field: keyof T): number {
 
       return Array.from(new Set(array.map(obj => obj[field])));
     }
+
+    export function groupByProperty<T>(array: T[], keyField:keyof T): Record<keyof T,T[]> {
+      const groups: Record<keyof T, T[]> = {} as Record<keyof T, T[]>  ;
+      for (const item of array) {
+        if (!groups[keyField]) {
+          groups[keyField] = [];
+        }
+        groups[keyField].push(item);
+      }
+      return groups;
+    }
+
+
+    
