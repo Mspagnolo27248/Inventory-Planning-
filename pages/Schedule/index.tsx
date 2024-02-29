@@ -6,10 +6,12 @@ import { groupByProperty } from "@/class-libraries/utils/dto-helper/dto-helper";
 import { fetchDataAndAddId } from "@/class-libraries/utils/fetch-helper/fetch-helper";
 import { useAlert } from "@/contexts/Alert/AlertContext";
 import React, { useEffect, useState } from "react";
+import internal from "stream";
 
 function SchedulePage() {
-  const [scheduleData, setScheduleData] =
-    useState<(Schedule & { internalId: string })[]>();
+  const [scheduleData, setScheduleData] = useState<(Schedule & { internalId: string })[]>();
+  const [changedData, setChangedData] = useState<Map<[internalId:string],Schedule>>();
+
   const [isLoading, setIsLoading] = useState(true);
   const [sortedDates, setSortedDates] = useState<Date[]>();
   const apiUrl = process.env.NEXT_PUBLIC_BACKEND_SCHEDULE || "";
